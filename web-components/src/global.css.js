@@ -10,7 +10,6 @@ const styles = document.createElement('style');
 
 styles.innerHTML = `
 :root {
-
     --consonant-merch-card-detail-font-size: 12px;
     --consonant-merch-card-detail-font-weight: 500;
     --consonant-merch-card-detail-letter-spacing: 0.8px;
@@ -21,7 +20,7 @@ styles.innerHTML = `
     --consonant-merch-card-heading-secondary-font-size: 14px;
     --consonant-merch-card-body-font-size: 14px;
     --consonant-merch-card-body-line-height: 21px;
-    --consonant-merch-card-promo-text-height: 17px;
+    --consonant-merch-card-promo-text-height: var(--consonant-merch-card-body-font-size);
 
     /* responsive width */
     --consonant-merch-card-mobile-width: 300px;
@@ -426,6 +425,7 @@ merch-card [slot="promo-text"] {
 
 merch-card[variant="mini-compare-chart"] [slot="promo-text"] {
     padding: var(--consonant-merch-spacing-xs) var(--consonant-merch-spacing-s) 0;
+    font-size: var(--consonant-merch-card-body-m-font-size);
 }
 
 merch-card[variant="mini-compare-chart"] [slot="promo-text"] a {

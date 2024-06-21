@@ -354,6 +354,7 @@ export class MerchCard extends LitElement {
         return html` ${this.badge}
             <div class="body">
                 <slot name="heading-xs"></slot>
+                <slot name="body-xxs"></slot>
                 <slot name="promo-text"></slot>
                 <slot name="body-xs"></slot>
             </div>
@@ -366,10 +367,10 @@ export class MerchCard extends LitElement {
             <div class="body">
                 <slot name="icons"></slot>
                 <slot name="heading-xs"></slot>
-                <slot name="promo-text"></slot>
                 <slot name="heading-m"></slot>
                 <slot name="body-xxs"></slot>
-                <slot name="body-xs"></slot>
+                <slot name="promo-text"></slot>
+                <slot name="body-xs"></slot>                
                 ${this.stockCheckbox}
             </div>
             <slot name="quantity-select"></slot>
@@ -397,6 +398,7 @@ export class MerchCard extends LitElement {
                 >
                 <slot name="heading-xs"></slot>
                 <slot name="heading-m"></slot>
+                <slot name="body-xxs"></slot>
                 <slot name="promo-text"></slot>
                 <slot name="body-xs"></slot>
             </div>
@@ -408,8 +410,8 @@ export class MerchCard extends LitElement {
             <div class="body">
                 <slot name="icons"></slot>
                 <slot name="heading-xs"></slot>
-                <slot name="promo-text"></slot>
                 <slot name="body-xxs"></slot>
+                <slot name="promo-text"></slot>
                 <slot name="body-xs"></slot>
             </div>
             ${this.evergreen
@@ -444,6 +446,7 @@ export class MerchCard extends LitElement {
             <div class="body">
                 <slot name="icons"></slot>
                 <slot name="heading-xs"></slot>
+                <slot name="body-xxs"></slot>
                 <slot name="promo-text"></slot>
                 <slot name="body-xs"></slot>
             </div>
