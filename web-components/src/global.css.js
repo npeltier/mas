@@ -423,9 +423,15 @@ merch-card [slot="promo-text"] {
     padding: 0;
 }
 
+
+merch-card[variant="mini-compare-chart"] [slot="body-xxs"] {
+    font-size: var(--consonant-merch-card-body-xs-font-size);
+    padding: var(--consonant-merch-spacing-xs) var(--consonant-merch-spacing-s) 0;    
+}
+
 merch-card[variant="mini-compare-chart"] [slot="promo-text"] {
-    padding: var(--consonant-merch-spacing-xs) var(--consonant-merch-spacing-s) 0;
     font-size: var(--consonant-merch-card-body-m-font-size);
+    padding: var(--consonant-merch-spacing-xs) var(--consonant-merch-spacing-s) 0;
 }
 
 merch-card[variant="mini-compare-chart"] [slot="promo-text"] a {
@@ -506,9 +512,14 @@ merch-card[variant="mini-compare-chart"] .footer-row-cell-description a {
         padding: 0 var(--consonant-merch-spacing-xs);
     }
 
+    merch-card[variant="mini-compare-chart"] [slot="body-xxs"] {
+        font-size: var(--consonant-merch-card-body-xs-font-size);
+        padding: 0 var(--consonant-merch-spacing-xs);
+    }
+
     merch-card[variant="mini-compare-chart"] [slot="promo-text"] {
         font-size: var(--consonant-merch-card-body-xs-font-size);
-        padding: var(--consonant-merch-spacing-xs);
+        padding: 0 var(--consonant-merch-spacing-xs);
     }
 
     merch-card[variant="mini-compare-chart"] .footer-row-cell {
