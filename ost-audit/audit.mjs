@@ -201,7 +201,7 @@ async function auditPage( ctx, url ) {
         fetched.add(url);
         const response = await fetchDocument(url);        
         if (!response.ok) {
-            console.log(`Error: response status for ${response.url} is ${response.status}`);
+            console.log(`Error (${ctx.origin}): response status for ${response.url} is ${response.status}`);
             return;
         }
         if (url === ctx.origin) {
