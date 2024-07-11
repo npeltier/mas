@@ -30,7 +30,7 @@ const GeoMap = { ar: 'AR_es', be_en: 'BE_en', be_fr: 'BE_fr', be_nl: 'BE_nl', br
 };
 const wcsUrl = (osi, locale) => `https://wcs.adobe.com/web_commerce_artifact?offer_selector_ids=${osi}&country=${locale.country}&language=${locale.country === 'GB' ? 'EN' : 'MULT'}&locale=${locale.locale}&api_key=wcms-commerce-ims-ro-user-milo&landscape=PUBLISHED`;
 const mapWcs = {};
-const WCS_KEYS = [ 'offerId' , 'productArrangementCode' , 'commitment' , 'term' , 'customerSegment' , 'marketSegments' , 'offerType' , 'pricePoint' ];
+const WCS_KEYS = [ 'offerId' , 'productArrangementCode' , 'commitment' , 'term' , 'customerSegment' , 'marketSegments' , 'offerType' , 'pricePoint', 'priceDetails.price', 'priceDetails.priceWithoutTax', 'priceDetails.priceWithoutDiscount', 'priceDetails.priceWithoutDiscountAndTax' ];
 const retries = new Set();
 const fetched = new Set();
 const isRelative = (url) => (url[0] == '/');
@@ -139,7 +139,16 @@ async function setCommerceData(osi, locale) {
         const json = await response.json();
         const offer = json.resolvedOffers[0];
         if (offer) {
-            WCS_KEYS.forEach( (key) => data[prefixWcsKey(key)] = offer[key]);
+            WCS_KEYS.forEach( (key) => {
+                let subkeys = key.split('.');               
+                let object = offer;
+                while (subkeys?.length > 0) {
+                    const subkey = subkeys[0];
+                    subkeys = subkeys.slice(1);
+                    object = object[subkey];
+                }
+                data[prefixWcsKey(key)] = object;
+            });
         }
     }
     if (Object.keys(data).length == 0) {
