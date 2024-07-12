@@ -14,6 +14,7 @@ import {
     EVENT_MERCH_OFFER_SELECT_READY,
     EVENT_MERCH_QUANTITY_SELECTOR_CHANGE,
     EVENT_MERCH_STORAGE_CHANGE,
+    EVENT_MERCH_CARD_ACTION_MENU_TOGGLE,
 } from './constants.js';
 import { getTextNodes } from './utils.js';
 
@@ -250,6 +251,17 @@ export class MerchCard extends LitElement {
             'slot[name="action-menu-content"]',
         );
         if (!actionMenuContentSlot) return;
+        if (!retract) {
+            this.dispatchEvent(
+                new CustomEvent(EVENT_MERCH_CARD_ACTION_MENU_TOGGLE, {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        type: 'action-menu',
+                    },
+                }),
+            );
+        }
         actionMenuContentSlot.classList.toggle('hidden', retract);
     }
 
@@ -373,8 +385,8 @@ export class MerchCard extends LitElement {
                 <slot name="heading-m"></slot>
                 <slot name="body-xxs"></slot>
                 <slot name="promo-text"></slot>
-                <slot name="callout-text"></slot>            
-                <slot name="body-xs"></slot>    
+                <slot name="callout-text"></slot>
+                <slot name="body-xs"></slot>
                 ${this.stockCheckbox}
             </div>
             <slot name="quantity-select"></slot>

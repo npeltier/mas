@@ -1,5 +1,5 @@
 // src/sidenav/merch-sidenav.js
-import { html as html4, css as css5, LitElement as LitElement4 } from "/libs/deps/lit-all.min.js";
+import { html as html4, css as css4, LitElement as LitElement4 } from "/libs/deps/lit-all.min.js";
 
 // ../node_modules/@spectrum-web-components/reactive-controllers/src/MatchMedia.js
 var MatchMediaController = class {
@@ -37,7 +37,10 @@ var headingStyles = css`
 `;
 
 // src/merch-search.js
-import { html, LitElement, css as css2 } from "/libs/deps/lit-all.min.js";
+import { html, LitElement } from "/libs/deps/lit-all.min.js";
+
+// src/constants.js
+var EVENT_MERCH_SEARCH_CHANGE = "merch-search:change";
 
 // src/utils.js
 function debounce(func, delay) {
@@ -119,15 +122,35 @@ var MerchSearch = class extends LitElement {
   }
   constructor() {
     super();
-    this.handleInput = () => pushStateFromComponent(this, this.search.value);
+    this.handleInput = () => {
+      pushStateFromComponent(this, this.search.value);
+    };
+    this.handleInputAndAnalytics = () => {
+      pushStateFromComponent(this, this.search.value);
+      if (this.search.value) {
+        this.dispatchEvent(
+          new CustomEvent(EVENT_MERCH_SEARCH_CHANGE, {
+            bubbles: true,
+            composed: true,
+            detail: {
+              type: "search",
+              value: this.search.value
+            }
+          })
+        );
+      }
+    };
     this.handleInputDebounced = debounce(this.handleInput.bind(this));
+    this.handleChangeDebounced = debounce(
+      this.handleInputAndAnalytics.bind(this)
+    );
   }
   connectedCallback() {
     super.connectedCallback();
     if (!this.search)
       return;
     this.search.addEventListener("input", this.handleInputDebounced);
-    this.search.addEventListener("change", this.handleInputDebounced);
+    this.search.addEventListener("change", this.handleChangeDebounced);
     this.search.addEventListener("submit", this.handleInputSubmit);
     this.updateComplete.then(() => {
       this.setStateFromURL();
@@ -137,7 +160,7 @@ var MerchSearch = class extends LitElement {
   disconnectedCallback() {
     super.disconnectedCallback();
     this.search.removeEventListener("input", this.handleInputDebounced);
-    this.search.removeEventListener("change", this.handleInputDebounced);
+    this.search.removeEventListener("change", this.handleChangeDebounced);
     this.search.removeEventListener("submit", this.handleInputSubmit);
     this.stopDeeplink?.();
   }
@@ -166,7 +189,7 @@ var MerchSearch = class extends LitElement {
 customElements.define("merch-search", MerchSearch);
 
 // src/sidenav/merch-sidenav-list.js
-import { html as html2, LitElement as LitElement2, css as css3 } from "/libs/deps/lit-all.min.js";
+import { html as html2, LitElement as LitElement2, css as css2 } from "/libs/deps/lit-all.min.js";
 var MerchSidenavList = class extends LitElement2 {
   static properties = {
     title: { type: String },
@@ -184,7 +207,7 @@ var MerchSidenavList = class extends LitElement2 {
     }
   };
   static styles = [
-    css3`
+    css2`
             :host {
                 display: block;
                 contain: content;
@@ -299,7 +322,7 @@ var MerchSidenavList = class extends LitElement2 {
 customElements.define("merch-sidenav-list", MerchSidenavList);
 
 // src/sidenav/merch-sidenav-checkbox-group.js
-import { html as html3, LitElement as LitElement3, css as css4 } from "/libs/deps/lit-all.min.js";
+import { html as html3, LitElement as LitElement3, css as css3 } from "/libs/deps/lit-all.min.js";
 var MerchSidenavCheckboxGroup = class extends LitElement3 {
   static properties = {
     title: { type: String },
@@ -308,7 +331,7 @@ var MerchSidenavCheckboxGroup = class extends LitElement3 {
     selectedValues: { type: Array, reflect: true },
     value: { type: String }
   };
-  static styles = css4`
+  static styles = css3`
         :host {
             display: block;
             contain: content;
@@ -451,7 +474,7 @@ var MerchSideNav = class extends LitElement4 {
     this.modal = false;
   }
   static styles = [
-    css5`
+    css4`
             :host {
                 display: block;
             }
