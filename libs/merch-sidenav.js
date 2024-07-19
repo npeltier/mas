@@ -41,6 +41,7 @@ import { html, LitElement } from "/libs/deps/lit-all.min.js";
 
 // src/constants.js
 var EVENT_MERCH_SEARCH_CHANGE = "merch-search:change";
+var EVENT_MERCH_SIDENAV_SELECT = "merch-sidenav:select";
 
 // src/utils.js
 function debounce(func, delay) {
@@ -249,6 +250,17 @@ var MerchSidenavList = class extends LitElement2 {
       setTimeout(() => {
         element.selected = true;
       }, 1);
+      this.dispatchEvent(
+        new CustomEvent(EVENT_MERCH_SIDENAV_SELECT, {
+          bubbles: true,
+          composed: true,
+          detail: {
+            type: "sidenav",
+            value: this.selectedValue,
+            elt: this.selectedElement
+          }
+        })
+      );
     }
   }
   /*
