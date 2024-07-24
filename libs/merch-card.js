@@ -1570,9 +1570,11 @@ body.merch-modal {
                 <slot name="heading-xs"></slot>
                 <slot name="heading-m"></slot>
                 <slot name="body-xxs"></slot>
-                ${this.promoBottom?"":o`<slot name="promo-text"></slot><slot name="callout-text"></slot>`}
+                ${this.promoBottom?"":o`<slot name="promo-text"></slot
+                          ><slot name="callout-text"></slot>`}
                 <slot name="body-xs"></slot>
-                ${this.promoBottom?o`<slot name="promo-text"></slot><slot name="callout-text"></slot>`:""}
+                ${this.promoBottom?o`<slot name="promo-text"></slot
+                          ><slot name="callout-text"></slot>`:""}
             </div>
             ${this.secureLabelFooter}`}renderImage(){return o`${this.cardImage}
             <div class="body">

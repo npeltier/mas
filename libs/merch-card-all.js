@@ -1547,9 +1547,11 @@ body.merch-modal {
                 <slot name="heading-xs"></slot>
                 <slot name="heading-m"></slot>
                 <slot name="body-xxs"></slot>
-                ${this.promoBottom?"":l`<slot name="promo-text"></slot><slot name="callout-text"></slot>`}
+                ${this.promoBottom?"":l`<slot name="promo-text"></slot
+                          ><slot name="callout-text"></slot>`}
                 <slot name="body-xs"></slot>
-                ${this.promoBottom?l`<slot name="promo-text"></slot><slot name="callout-text"></slot>`:""}
+                ${this.promoBottom?l`<slot name="promo-text"></slot
+                          ><slot name="callout-text"></slot>`:""}
             </div>
             ${this.secureLabelFooter}`}renderImage(){return l`${this.cardImage}
             <div class="body">
