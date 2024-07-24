@@ -21,9 +21,6 @@ export class MerchSearch extends LitElement {
 
         this.handleInput = () => {
             pushStateFromComponent(this, this.search.value);
-        };
-        this.handleInputAndAnalytics = () => {
-            pushStateFromComponent(this, this.search.value);
             if (this.search.value) {
                 this.dispatchEvent(
                     new CustomEvent(EVENT_MERCH_SEARCH_CHANGE, {
@@ -38,16 +35,12 @@ export class MerchSearch extends LitElement {
             }
         };
         this.handleInputDebounced = debounce(this.handleInput.bind(this));
-        this.handleChangeDebounced = debounce(
-            this.handleInputAndAnalytics.bind(this),
-        );
     }
 
     connectedCallback() {
         super.connectedCallback();
         if (!this.search) return;
         this.search.addEventListener('input', this.handleInputDebounced);
-        this.search.addEventListener('change', this.handleChangeDebounced);
         this.search.addEventListener('submit', this.handleInputSubmit);
         this.updateComplete.then(() => {
             this.setStateFromURL();
@@ -58,7 +51,6 @@ export class MerchSearch extends LitElement {
     disconnectedCallback() {
         super.disconnectedCallback();
         this.search.removeEventListener('input', this.handleInputDebounced);
-        this.search.removeEventListener('change', this.handleChangeDebounced);
         this.search.removeEventListener('submit', this.handleInputSubmit);
         this.stopDeeplink?.();
     }
