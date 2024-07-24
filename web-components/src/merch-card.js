@@ -264,6 +264,7 @@ export class MerchCard extends LitElement {
                     bubbles: true,
                     composed: true,
                     detail: {
+                        card: this.name,
                         type: 'action-menu',
                     },
                 }),

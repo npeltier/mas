@@ -2,7 +2,7 @@ import { html, LitElement, css } from 'lit';
 import { parseState, pushStateFromComponent } from '@adobe/mas-commons';
 import { headingStyles } from './merch-sidenav-heading.css.js';
 import { debounce } from '../utils';
-import { EVENT_MERCH_SIDENAV_SELECT } from '../constants.js';
+import { EVENT_MERCH_SIDENAV_SELECT } from '../constants.js';
 export class MerchSidenavList extends LitElement {
     static properties = {
         title: { type: String },
@@ -66,7 +66,7 @@ export class MerchSidenavList extends LitElement {
                 element.selected = true;
             }, 1);
             this.dispatchEvent(
-                new CustomEvent( EVENT_MERCH_SIDENAV_SELECT, {
+                new CustomEvent(EVENT_MERCH_SIDENAV_SELECT, {
                     bubbles: true,
                     composed: true,
                     detail: {

@@ -322,15 +322,15 @@ export class MerchCardCollection extends LitElement {
     }
 
     async showMore() {
-        const page = this.page + 1;
-        pushState({ page });
-        this.page = page;
         this.dispatchEvent(
             new CustomEvent(EVENT_MERCH_CARD_COLLECTION_SHOWMORE, {
                 bubbles: true,
                 composed: true,
             }),
         );
+        const page = this.page + 1;
+        pushState({ page });
+        this.page = page;
         await this.updateComplete;
     }
 
