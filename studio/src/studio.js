@@ -9,6 +9,8 @@ import './rte-editor.js';
 
 import { getOffferSelectorTool, openOfferSelectorTool } from './ost.js';
 
+import { renderVariantPicker } from './editors/variant-picker.js';
+
 const EVENT_LOAD_START = 'load-start';
 const EVENT_LOAD_END = 'load-end';
 
@@ -259,19 +261,7 @@ class MasStudio extends LitElement {
                     value=${this.searchText}
                     size="m"
                 ></sp-search>
-                <sp-picker
-                    label="Card Variant"
-                    size="m"
-                    value=${this.variant}
-                    @change="${this.handleVariantChange}"
-                >
-                    <sp-menu-item value="all">All</sp-menu-item>
-                    <sp-menu-item value="special-offers"
-                        >Special Offers</sp-menu-item
-                    >
-                    <sp-menu-item value="ccd-action">CCD Action</sp-menu-item>
-                    <sp-menu-item value="catalog">Catalog</sp-menu-item>
-                </sp-picker>
+                ${renderVariantPicker(this.variant, this.handleVariantChange)}
                 <sp-button @click=${this.doSearch}>Search</sp-button>
             </div>
             ${this.content} ${this.fragmentEditor} ${this.selectFragmentDialog}

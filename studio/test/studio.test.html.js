@@ -22,7 +22,7 @@ import { getTemplateContent, delay } from './utils.js';
 import '@tinymce/tinymce-webcomponent';
 
 runTests(async () => {
-    describe.skip('M@S Studio', () => {
+    describe('M@S Studio', () => {
         beforeEach(() => {
             //document.location.hash = '#';
             document.querySelector('main').innerHTML = '';
