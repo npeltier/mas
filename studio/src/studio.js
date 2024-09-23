@@ -261,7 +261,11 @@ class MasStudio extends LitElement {
                     value=${this.searchText}
                     size="m"
                 ></sp-search>
-                ${renderVariantPicker(this.variant, this.handleVariantChange)}
+                ${renderVariantPicker(
+                    this.variant,
+                    this.handleVariantChange,
+                    'vpick',
+                )}
                 <sp-button @click=${this.doSearch}>Search</sp-button>
             </div>
             ${this.content} ${this.fragmentEditor} ${this.selectFragmentDialog}

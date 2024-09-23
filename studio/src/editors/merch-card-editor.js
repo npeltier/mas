@@ -1,6 +1,6 @@
 import { html, LitElement, nothing } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import { renderVariantPicker } from './variant-picker';
+import { renderVariantPicker } from './variant-picker.js';
 
 const MODEL_PATH = '/conf/mas/settings/dam/cfm/models/card';
 
