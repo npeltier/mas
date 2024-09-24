@@ -1,23 +1,31 @@
 import { build } from 'esbuild';
 
-build({
-    entryPoints: ['src/swc.js'],
-    format: 'esm',
+const defaults = {
+    alias: { react: '../mocks/react.js' },
     bundle: true,
-    outfile: 'libs/swc.js',
+    define: { 'process.env.NODE_ENV': '"production"' },
+    external: [],
+    format: 'esm',
+    minify: true,
+    platform: 'browser',
     sourcemap: true,
-    define: {
-        'process.env.NODE_ENV': '"production"',
-    },
-}).catch(() => process.exit(1));
+    target: ['es2020'],
+};
 
-build({
+await build({
+    ...defaults,
+    entryPoints: ['src/swc.js'],
+    outfile: 'libs/swc.js',
+});
+
+await build({
+    ...defaults,
+    entryPoints: ['src/aem/index.js'],
+    outfile: 'libs/aem.js',
+});
+
+await build({
+    ...defaults,
     entryPoints: ['src/studio.js'],
-    format: 'esm',
-    bundle: true,
     outfile: 'libs/studio.js',
-    sourcemap: true,
-    define: {
-        'process.env.NODE_ENV': '"production"',
-    },
-}).catch(() => process.exit(1));
+});

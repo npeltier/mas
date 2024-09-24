@@ -2,22 +2,33 @@
 import { runTests } from '@web/test-runner-mocha';
 import { expect } from '@esm-bundle/chai';
 
+// import '@adobecom/milo/libs/features/mas/mas/src/mas.js';
+import '@adobecom/milo/libs/deps/mas/mas.js';
+
+import '../../src/aem/content-navigation.js';
+import '../../src/aem/aem-fragments.js';
+import '../../src/aem/table-view.js';
+import '../../src/aem/render-view.js';
+
 import '../src/swc.js';
 import '../src/studio.js';
 
-import { mockFetch } from './mocks/fetch.js';
-import { withAem } from './mocks/aem.js';
-import { withWcs } from './mocks/wcs.js';
+import { mockFetch } from '@adobecom/milo/libs/features/mas/mocks/fetch.js';
+import { withAem } from '@adobecom/milo/libs/features/mas/mocks/aem.js';
+import { withWcs } from '@adobecom/milo/libs/features/mas/mocks/wcs.js';
 
-import mas from './mocks/mas.js?features=merch-card';
-import { getTemplateContent } from '@adobe/mas-commons/test/utils.js';
+import { getTemplateContent, delay } from './utils.js';
+
+import '@tinymce/tinymce-webcomponent';
 
 runTests(async () => {
-    await mockFetch(withAem, withWcs);
-    await mas();
-
     describe('M@S Studio', () => {
-        it('should render', () => {
+        beforeEach(() => {
+            //document.location.hash = '#';
+            document.querySelector('main').innerHTML = '';
+        });
+
+        it('should render', async () => {
             const [studio] = getTemplateContent('studio');
             document.querySelector('main').append(studio);
             expect(studio).exist;

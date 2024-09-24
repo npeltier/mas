@@ -1,25 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
+    <head>
+        <title>Merch at Scale Studio</title>
+        <meta property="og:title" content="Merch at Scale Studio" />
+        <meta name="nofollow-links" content="on" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+            id="mas-src"
+            content="/__wds-outside-root__/1/node_modules/@adobecom/milo/libs/deps/mas/mas.js"
+        /> <!-- this is injected in the iframes created by the TinyMCE RTE -->
+        <script>
+            window.process = { env: {} };
+            window.adobeid = {
+                authorize: () => localStorage.getItem('masAccessToken'),
+            };
+        </script>
+        <script src="/__wds-outside-root__/1/node_modules/tinymce/tinymce.js"></script>
+        <script src="studio.test.html.js" type="module"></script>
+        <!-- OST -->
+        <script src="../ost/index.js"></script>
+        <link rel="stylesheet" href="../ost/index.css" />
 
-<head>
-  <title>Merch at Scale Studio</title>
-  <meta property="og:title" content="Merch at Scale Studio">
-  <meta name="nofollow-links" content="on">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script type="module">
-    window.process = { env: {} };
-  </script>
-  <script src="studio.test.html.js" type="module"></script>
-  <link rel="stylesheet" href="../style.css">
+        <!-- MAS Studo styles -->
+        <link rel="stylesheet" href="../style.css" />
+    </head>
 
-<body>
-  <main>
-  </main>
-  <template id="studio">
-    <sp-theme color="light" scale="medium">
-      <mas-studio aem-bucket="author-p22655-e59341"></mas-studio>
-    </sp-theme>
-  </template>
-</body>
-
+    <body>
+        <main></main>
+        <template id="studio">
+            <sp-theme color="light" scale="medium">
+                <mas-studio
+                    base-url="http://localhost:8080"
+                ></mas-studio>
+            </sp-theme>
+            <div id="ost"></div>
+        </template>
+    </body>
 </html>

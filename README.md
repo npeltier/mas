@@ -36,12 +36,6 @@ Before each push 'npm run build' is triggered.
 
 There is no need to run 'npm run build' manually, but if you run it and commit - no issue (then hook won't do an additional commit).
 
-# Consumption of artifacts in Milo
-Please run 'npm run build:milo'
-```
-npm run build:milo
-```
-Copy required artifacts from 'milo-libs' folder to milo/libs/deps.
 
 #### Troubleshooting
 Please reach out to us in `#tacocat-friends` for any questions.

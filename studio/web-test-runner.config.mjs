@@ -25,6 +25,13 @@ export default {
         exclude: ['test/mocks/**', 'test/**', '**/node_modules/**'],
     },
     files: ['test/**/*.test.(js|html)'],
+    middleware: [
+        async (ctx, next) => {
+            await next();
+            ctx.set('Access-Control-Allow-Credentials', true);
+            ctx.set('Access-Control-Allow-Origin', '*');
+        },
+    ],
     plugins: [
         importMapsPlugin({
             inject: {

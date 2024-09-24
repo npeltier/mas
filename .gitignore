@@ -15,3 +15,6 @@ web-components/screenshots/Chrome/failed/*
 server.crt
 server.key
 milo-libs
+*LICENSE.txt
+swc.json
+studio.json

@@ -1,60 +1,145 @@
+body {
+    margin: 0;
+}
+
+sp-theme {
+    background-color: var(--spectrum-background-layer-1-color);
+}
+
 mas-studio {
+    margin: 0 16px;
     display: flex;
     gap: 8px;
     align-items: center;
     flex-direction: column;
-  }
-  
-  merch-card {
-    position: relative;
-  }
-  
-  mas-studio > ul > li {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+}
+
+mas-studio > ul > li {
     list-style: none;
     position: relative;
     border-top: 1px dodgerblue solid;
     margin-top: 16px;
     display: flex;
     justify-content: center;
-  }
-    
-  mas-studio .block {
-    margin-top: 64px;
-  }
-  
-  mas-studio p.path {
-    position: absolute;
-    top: 16px;
-    left: 0;
-    white-space: nowrap;
-    margin: 0;
-  }
-  
-  mas-studio sp-action-group {
-    position: absolute;
-    top: 16px;
-    right: 0;
-  }
-  
-  mas-studio > ul {
-    width: 80%;
-  }
-  
-  div[data-cf-path] {
-    margin: 60px 0 10px;
-  }
-  
-  sp-action-button#confirm {
-    margin-left: 16px;
-  }
-  
-  sp-textfield {
+}
+
+action-bar {
+    align-self: flex-end;
+}
+
+sp-textfield {
     width: 360px;
-  }
-  
-  footer {
+}
+
+sp-underlay + sp-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--spectrum-gray-100);
+}
+
+#editor {
+    position: fixed;
+    bottom: 1em;
+    left: var(--editor--left);
+    right: var(--editor--right);
+    top: var(--editor--top);
+    bottom: var(--editor--bottom);
+    height: 800px;
+}
+
+#editor sp-dialog {
+    width: 600px;
+    overflow-y: scroll;
+}
+
+#actions {
     display: flex;
-    flex-direction: column;
+    grid-column: 1 / -1;
+    justify-content: end;
+}
+
+#ost {
+    height: 80vh;
+    width: 80vw;
+}
+
+sp-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    z-index: 10;
+    transform: translateX(-50%);
+}
+
+sp-status-light {
+    position: absolute;
+    bottom: -6px;
+    left: 6px;
+}
+
+/* tinymce styles */
+rte-editor + .tox.tox-tinymce {
+    width: 100%;
+    border: 1px solid var(--spectrum-global-color-gray-500);
+    border-radius: var(--spectrum-corner-radius-100);
+}
+
+merch-card {
+    cursor: pointer;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+merch-card.selected {
+    outline: 2px solid var(--spectrum-global-color-blue-600);
+}
+
+sp-progress-circle {
+    position: absolute;
+    top: 50%;
+    margin: 0 auto;
+}
+
+content-navigation {
+    align-self: stretch;
+    flex: 1;
+}
+
+render-view {
+    margin: 32px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-inline-start: 0;
+    align-items: start;
+    background-color: var(--spectrum-background-layer-2-color);
+}
+
+content-navigation render-view merch-card .overlay {
+    display: none;
+}
+
+merch-card-editor {
+    display: block;
+    margin-top: 32px;
+}
+
+content-navigation[in-selection] render-view merch-card .overlay {
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 16px;
+    position: absolute;
+    display: flex;
+    justify-content: center;
     align-items: center;
-    margin-top: 200px;
-  }
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
