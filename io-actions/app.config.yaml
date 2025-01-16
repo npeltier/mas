@@ -6,12 +6,6 @@ application:
       MerchAtScale:
         license: Apache-2.0
         actions:
-          convertSchema:
-            function: src/fragment/convertSchema.js
-            runtime: nodejs:18
-            inputs:
-              annotations:
-                require-adobe-auth: false
           fetch:
             function: src/fragment/fetch.js
             runtime: nodejs:18
@@ -38,7 +32,7 @@ application:
                 require-adobe-auth: false
         sequences:
           fragment:
-            actions: 'fetch,translate,convertSchema'
+            actions: 'fetch,translate'
             web: 'yes'
             annotations:
               require-adobe-auth: false

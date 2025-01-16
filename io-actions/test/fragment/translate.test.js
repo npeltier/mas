@@ -13,8 +13,12 @@ mockResponse = (input) => {
 describe('translate typical cases', () => {
     test('should return translated fragment', async () => {
         mockResponse({
-            path: '/content/dam/mas/nico/fr_FR/someFragment',
-            some: 'corps',
+            items: [
+                {
+                    path: '/content/dam/mas/nico/fr_FR/someFragment',
+                    some: 'corps',
+                },
+            ],
         });
         expect(
             await action.main({
@@ -106,7 +110,6 @@ describe('translate corner cases', () => {
                 path: '/content/dam/mas/nico/fr_FR/someFragment',
                 some: 'body',
             },
-            locale: 'fr_FR',
         });
     });
 });

@@ -21,20 +21,24 @@ async function main({ status, body, locale }) {
     const { surface, parsedLocale, fragmentPath } = match.groups;
     if (parsedLocale !== locale) {
         const response = await fetch(
-            `https://odin.adobe.com/adobe/sites/cf/fragments?path=/content/dam/mas/${surface}/${locale}/${fragmentPath}`,
+            `https://odin.adobe.com/adobe/sites/fragments?path=/content/dam/mas/${surface}/${locale}/${fragmentPath}`,
         );
-        body = await response.json();
-        return {
-            status: 200,
-            body,
-        };
-    } else {
-        return {
-            status: 200,
-            body,
-            locale,
-        };
+        const resp = await response.json();
+        if (resp?.items?.length == 1) {
+            return {
+                status: 200,
+                body: resp.items[0],
+            };
+        } else {
+            return {
+                status: 400,
+            };
+        }
     }
+    return {
+        status: 200,
+        body,
+    };
 }
 
 exports.main = main;
