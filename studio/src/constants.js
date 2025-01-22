@@ -14,6 +14,10 @@ export const CHECKOUT_CTA_TEXTS = {
     'upgrade-now': 'Upgrade now',
     'get-offer': 'Get offer',
 };
+export const WCS_LANDSCAPE_PUBLISHED = 'PUBLISHED';
+export const WCS_LANDSCAPE_DRAFT = 'DRAFT';
+export const WCS_ENV_PROD = 'prod';
+export const WCS_ENV_STAGE = 'stage';
 
 export const ANALYTICS_LINK_IDS = [
     'learn-more',
@@ -21,3 +25,15 @@ export const ANALYTICS_LINK_IDS = [
     'what-is-included',
     'register-now',
 ];
+
+// TODO remove these?
+export const EVENT_CHANGE = 'change';
+export const EVENT_INPUT = 'input';
+
+export const KEY_ENTER = 'Enter';
+export const EVENT_KEYDOWN = 'keydown';
+export const EVENT_KEYUP = 'keyup';
+
+export const EVENT_FRAGMENT_CHANGE = 'fragment:change';
+
+export const EVENT_OST_SELECT = 'ost-select';
