@@ -1,20 +1,12 @@
 const fetch = require('node-fetch');
-
-const PATH_TOKENS =
-    /\/content\/dam\/mas\/(?<surface>[\w]+)\/(?<parsedLocale>[\w_]+)\/(?<fragmentPath>.*)/;
-
+const { PATH_TOKENS, odinPath } = require('./paths.js');
 /**
  * we expect a body to already have been fetched, and a locale to be requested
  */
-async function main({ status, message, body, locale }) {
-    if (!status || status != 200 || !body || !locale) {
-        return {
-            status: 400,
-            message:
-                message || 'requested source is either not here or invalid',
-        };
-    }
-    const match = body.path?.match(PATH_TOKENS);
+async function translate(context) {
+    const { body, locale = 'en_US' } = context;
+    let translatedBody;
+    const match = body?.path?.match(PATH_TOKENS);
     if (!match) {
         return {
             status: 400,
@@ -22,16 +14,17 @@ async function main({ status, message, body, locale }) {
         };
     }
     const { surface, parsedLocale, fragmentPath } = match.groups;
+    if (!surface || !parsedLocale || !fragmentPath) {
+        return {
+            status: 400,
+            message: 'source path is either not here or invalid',
+        };
+    }
     if (parsedLocale !== locale) {
-        const response = await fetch(
-            `https://odin.adobe.com/adobe/sites/fragments?path=/content/dam/mas/${surface}/${locale}/${fragmentPath}`,
-        );
+        const response = await fetch(odinPath(surface, locale, fragmentPath));
         const root = await response.json();
         if (root?.items?.length == 1) {
-            return {
-                status: 200,
-                body: root.items[0],
-            };
+            translatedBody = root.items[0];
         } else {
             return {
                 status: 404,
@@ -40,9 +33,13 @@ async function main({ status, message, body, locale }) {
         }
     }
     return {
+        ...context,
         status: 200,
-        body,
+        body: translatedBody || body,
+        surface,
+        parsedLocale,
+        fragmentPath,
     };
 }
 
-exports.main = main;
+exports.translate = translate;
