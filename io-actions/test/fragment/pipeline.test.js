@@ -2,26 +2,28 @@ const { expect } = require('chai');
 const nock = require('nock');
 const action = require('../../src/fragment/pipeline.js');
 
+const nockNock = () => {
+    nock('https://odin.adobe.com')
+        .get('/adobe/sites/fragments/some-us-en-fragment')
+        .reply(200, {
+            path: '/content/dam/mas/nico/en_US/someFragment',
+            some: 'body',
+        });
+    nock('https://odin.adobe.com')
+        .get('/adobe/sites/fragments')
+        .query({ path: '/content/dam/mas/nico/fr_FR/someFragment' })
+        .reply(200, {
+            items: [
+                {
+                    path: '/content/dam/mas/nico/fr_FR/someFragment',
+                    some: 'corps',
+                },
+            ],
+        });
+};
+
 describe('pipeline full use case', () => {
     it('should return fully baked fragment', async () => {
-        nock('https://odin.adobe.com')
-            .get('/adobe/sites/fragments/some-us-en-fragment')
-            .reply(200, {
-                path: '/content/dam/mas/nico/en_US/someFragment',
-                some: 'body',
-            });
-        nock('https://odin.adobe.com')
-            .get('/adobe/sites/fragments')
-            .query({ path: '/content/dam/mas/nico/fr_FR/someFragment' })
-            .reply(200, {
-                items: [
-                    {
-                        path: '/content/dam/mas/nico/fr_FR/someFragment',
-                        some: 'corps',
-                    },
-                ],
-            });
-
         const result = await action.main({
             id: 'some-us-en-fragment',
             locale: 'fr_FR',

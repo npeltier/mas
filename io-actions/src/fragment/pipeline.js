@@ -1,11 +1,14 @@
 const fetchFragment = require('./fetch.js').fetchFragment;
 const translate = require('./translate.js').translate;
+const replace = require('./replace.js').replace;
 
 async function main(params) {
-    let context = await fetchFragment(params);
-    if (context.status == 200) {
-        context = await translate(context);
-    }
+    const sequence = [fetchFragment, translate, replace];
+    let context = { ...params, status: 200 };
+    sequence.forEach(async (worker) => {
+        if (context.status != 200) return;
+        context = await worker(context);
+    });
     returnValue = {
         status: context.status,
     };
