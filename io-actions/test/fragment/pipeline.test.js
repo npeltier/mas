@@ -1,8 +1,9 @@
 const { expect } = require('chai');
 const nock = require('nock');
 const action = require('../../src/fragment/pipeline.js');
+const mockDictionary = require('./replace.test.js').mockDictionary;
 
-const nockNock = () => {
+beforeEach(() => {
     nock('https://odin.adobe.com')
         .get('/adobe/sites/fragments/some-us-en-fragment')
         .reply(200, {
@@ -16,11 +17,19 @@ const nockNock = () => {
             items: [
                 {
                     path: '/content/dam/mas/nico/fr_FR/someFragment',
-                    some: 'corps',
+                    fields: {
+                        description: 'corps',
+                        cta: '{{buy-now}}',
+                    },
                 },
             ],
         });
-};
+    mockDictionary();
+});
+
+afterEach(() => {
+    nock.cleanAll();
+});
 
 describe('pipeline full use case', () => {
     it('should return fully baked fragment', async () => {
@@ -32,7 +41,10 @@ describe('pipeline full use case', () => {
             status: 200,
             body: {
                 path: '/content/dam/mas/nico/fr_FR/someFragment',
-                some: 'corps',
+                fields: {
+                    description: 'corps',
+                    cta: 'Buy now',
+                },
             },
         });
     });

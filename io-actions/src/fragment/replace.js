@@ -3,10 +3,10 @@ const { odinReferences, odinPath } = require('./paths.js');
 const DICTIONARY_ID_PATH = 'dictionary/index';
 const PH_REGEXP = /{{(\s*([\w\-]+)\s*)}}/gi;
 
-const getDictionaryId = async ({ surface, parsedLocale }) => {
+const getDictionaryId = async ({ surface, locale }) => {
     try {
         const response = await fetch(
-            odinPath(surface, parsedLocale, DICTIONARY_ID_PATH),
+            odinPath(surface, locale, DICTIONARY_ID_PATH),
         );
         if (response.status == 200) {
             const raw = await response.json();
@@ -29,9 +29,14 @@ const getDictionary = async (context) => {
         if (response.status == 200) {
             const raw = await response.json();
             const dictionary = {};
-            for (let i = 0; i < raw.fields.key.length; i++) {
-                dictionary[raw.fields.key[i]] = raw.fields.value[i];
-            }
+            Object.keys(raw.references).forEach((id) => {
+                const ref = raw.references[id]?.value?.fields;
+                if (ref?.key) {
+                    //we just test truthy keys as we can have empty placeholders
+                    //(treated different from absent ones)
+                    dictionary[ref.key] = ref.value || '';
+                }
+            });
             return dictionary;
         }
     } catch (e) {
@@ -42,34 +47,47 @@ const getDictionary = async (context) => {
 
 replaceValues = (input, dictionary, calls) => {
     const placeholders = input.matchAll(PH_REGEXP);
-    let replaced = input;
-    placeholders.forEach((match) => {
-        const key = match.groups[1];
+    let replaced = '';
+    let nextIndex = 0;
+    for (const match of placeholders) {
+        //match without {{ }}
+        const key = match[1];
+        //we concatenate everything from last iteration to index of placeholder
+        replaced = replaced + input.slice(nextIndex, match.index);
         //value will be key in case of undefined or circular reference
-        const value =
-            !dictionary[key] || calls.includes(key) ? key : dictionary[key];
-        if (value.test(PH_REGEXP)) {
+        let value =
+            dictionary[key] == undefined || calls.includes(key)
+                ? key
+                : dictionary[key];
+        if (value.match(PH_REGEXP)) {
+            //the value has nested PH
             calls.push(key);
             value = replaceValues(value, dictionary, calls);
+            calls.pop();
         }
-    });
+        //we concatenate value
+        replaced = replaced + value;
+        //and update index for next iteration
+        nextIndex = match.index + match[0].length;
+    }
+    replaced = replaced + input.slice(nextIndex);
     return replaced;
 };
 
 async function replace(context) {
-    const bodyString = JSON.stringify(context.body);
-    const dictionary = getDictionary(context);
-    const placeholders = bodyString.matchAll(PH_REGEXP);
-    let replaced;
-    placeholders.forEach((match) => {
-        const value = computeValue(match.groups[1], dictionary, new Stack());
-        if (value) {
-            body = body.replace(match, value);
+    const { body } = context;
+    let fieldsString = JSON.stringify(body.fields);
+    if (fieldsString.match(PH_REGEXP)) {
+        const dictionary = await getDictionary(context);
+        if (dictionary && Object.keys(dictionary).length > 0) {
+            fieldsString = replaceValues(fieldsString, dictionary, []);
+            body.fields = JSON.parse(fieldsString);
         }
-    });
+    }
     return {
-        statusCode: 200,
-        body: JSON.parse(body),
+        ...context,
+        status: 200,
+        body,
     };
 }
 exports.replace = replace;

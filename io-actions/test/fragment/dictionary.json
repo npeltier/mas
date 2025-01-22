@@ -56,6 +56,46 @@
                     "locReady": true
                 }
             }
+        },
+        "fake-empty-placeholder": {            
+            "value": {
+                "fields": {
+                    "key": "empty",
+                    "value": ""
+                }
+            }
+        },
+        "nested-value": {            
+            "value": {
+                "fields": {
+                    "key": "nested",
+                    "value": "little bird"
+                }
+            }
+        },
+        "nest": {            
+            "value": {
+                "fields": {
+                    "key": "nest",
+                    "value": "{{nested}} is in the nest"
+                }
+            }
+        },
+        "yin": {            
+            "value": {
+                "fields": {
+                    "key": "yin",
+                    "value": "yin and {{yang}}"
+                }
+            }
+        },
+        "yang": {            
+            "value": {
+                "fields": {
+                    "key": "yang",
+                    "value": "{{yin}} and yang"
+                }
+            }
         }
     }
 }

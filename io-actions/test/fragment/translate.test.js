@@ -29,6 +29,7 @@ describe('translate typical cases', () => {
             path: '/content/dam/mas/nico/fr_FR/someFragment',
             some: 'corps',
         });
+        nock.cleanAll();
     });
 });
 

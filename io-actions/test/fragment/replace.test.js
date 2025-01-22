@@ -8,17 +8,17 @@ const DICTIONARY_CF_RESPONSE = {
     id: 'fr_FR_dictionary',
 };
 
-const ODIN_RESPONSE = {
+const odinResponse = (description, cta = '{{buy-now}}') => ({
     path: '/content/dam/mas/nala/ccd/slice-cc-allapps31211',
     id: 'test',
     fields: {
         variant: 'ccd-slice',
-        description: 'please {{view-account}} for {{cai-default}}',
-        cta: '{{buy-now}}',
+        description,
+        cta,
     },
-};
+});
 
-const nockNock = () => {
+const mockDictionary = () => {
     nock('https://odin.adobe.com')
         .get('/adobe/sites/fragments')
         .query({ path: '/content/dam/mas/nico/fr_FR/dictionary/index' })
@@ -29,27 +29,69 @@ const nockNock = () => {
         )
         .reply(200, DICTIONARY_RESPONSE);
 };
+
+const getResponse = async (description, cta) => {
+    mockDictionary();
+    return await replace({
+        status: 200,
+        surface: 'nico',
+        locale: 'fr_FR',
+        body: odinResponse(description, cta),
+    });
+};
+
+const expectedResponse = (description) => ({
+    status: 200,
+    body: {
+        path: '/content/dam/mas/nala/ccd/slice-cc-allapps31211',
+        id: 'test',
+        fields: {
+            variant: 'ccd-slice',
+            description,
+            cta: 'Buy now',
+        },
+    },
+    locale: 'fr_FR',
+    surface: 'nico',
+});
+
 describe('replace', () => {
+    it('returns 200 & no placeholders', async () => {
+        const response = await getResponse('foo');
+        expect(response).to.deep.equal(expectedResponse('foo'));
+    });
     it('returns 200 & replaced entries keys with text', async () => {
-        nockNock();
-        const response = await replace({
-            status: 200,
-            surface: 'nico',
-            parsedLocale: 'fr_FR',
-            body: ODIN_RESPONSE,
-        });
-        expect(response).to.deep.equal({
-            statusCode: 200,
-            body: {
-                path: '/content/dam/mas/nala/ccd/slice-cc-allapps31211',
-                id: 'test',
-                fields: {
-                    variant: 'ccd-slice',
-                    description:
-                        'please View account for An AI tool was not used in creating this image region',
-                    cta: 'Buy now',
-                },
-            },
-        });
+        const response = await getResponse(
+            'please {{view-account}} for {{cai-default}} region',
+        );
+        expect(response).to.deep.equal(
+            expectedResponse(
+                'please View account for An AI tool was not used in creating this image region',
+            ),
+        );
+    });
+    it('returns 200 & replace empty (but present) placeholders', async () => {
+        const response = await getResponse('this is {{empty}}');
+        expect(response).to.deep.equal(expectedResponse('this is '));
+    });
+    it('returns 200 & manages nested placeholders', async () => {
+        const response = await getResponse('look! {{nest}}');
+        expect(response).to.deep.equal(
+            expectedResponse('look! little bird is in the nest'),
+        );
+    });
+    it('returns 200 & manages circular references', async () => {
+        const response = await getResponse('look! {{yin}}');
+        expect(response).to.deep.equal(
+            expectedResponse('look! yin and yin and yang'),
+        );
+    });
+    it('returns 200 & leaves non existing keys', async () => {
+        const response = await getResponse('this is {{non-existing}}');
+        expect(response).to.deep.equal(
+            expectedResponse('this is non-existing'),
+        );
     });
 });
+
+exports.mockDictionary = mockDictionary;
