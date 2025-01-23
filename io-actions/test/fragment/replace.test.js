@@ -2,10 +2,13 @@ const { expect } = require('chai');
 const nock = require('nock');
 const replace = require('../../src/fragment/replace.js').replace;
 const DICTIONARY_RESPONSE = require('./dictionary.json');
-
 const DICTIONARY_CF_RESPONSE = {
-    path: '/content/dam/mas/nico/fr_FR/dictionary/index',
-    id: 'fr_FR_dictionary',
+    items: [
+        {
+            path: '/content/dam/mas/drafts/fr_FR/dictionary/index',
+            id: 'fr_FR_dictionary',
+        },
+    ],
 };
 
 const odinResponse = (description, cta = '{{buy-now}}') => ({
@@ -21,7 +24,7 @@ const odinResponse = (description, cta = '{{buy-now}}') => ({
 const mockDictionary = () => {
     nock('https://odin.adobe.com')
         .get('/adobe/sites/fragments')
-        .query({ path: '/content/dam/mas/nico/fr_FR/dictionary/index' })
+        .query({ path: '/content/dam/mas/drafts/fr_FR/dictionary/index' })
         .reply(200, DICTIONARY_CF_RESPONSE);
     nock('https://odin.adobe.com')
         .get(
@@ -34,7 +37,7 @@ const getResponse = async (description, cta) => {
     mockDictionary();
     return await replace({
         status: 200,
-        surface: 'nico',
+        surface: 'drafts',
         locale: 'fr_FR',
         body: odinResponse(description, cta),
     });
@@ -52,7 +55,7 @@ const expectedResponse = (description) => ({
         },
     },
     locale: 'fr_FR',
-    surface: 'nico',
+    surface: 'drafts',
 });
 
 describe('replace', () => {
@@ -90,6 +93,12 @@ describe('replace', () => {
         const response = await getResponse('this is {{non-existing}}');
         expect(response).to.deep.equal(
             expectedResponse('this is non-existing'),
+        );
+    });
+    it('returns 200 & manages rich text', async () => {
+        const response = await getResponse('look! {{rich-text}}');
+        expect(response).to.deep.equal(
+            expectedResponse('look! <p>i am <strong>rich</strong></p>'),
         );
     });
 });

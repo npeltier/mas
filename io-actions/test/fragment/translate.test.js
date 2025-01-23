@@ -3,14 +3,17 @@ const nock = require('nock');
 const translate = require('../../src/fragment/translate.js').translate;
 
 describe('translate typical cases', () => {
-    it('should return translated fragment', async () => {
+    afterEach(() => {
+        nock.cleanAll();
+    });
+    it('should return fr fragment (us fragment, fr locale)', async () => {
         nock('https://odin.adobe.com')
             .get('/adobe/sites/fragments')
-            .query({ path: '/content/dam/mas/nico/fr_FR/someFragment' })
+            .query({ path: '/content/dam/mas/drafts/fr_FR/someFragment' })
             .reply(200, {
                 items: [
                     {
-                        path: '/content/dam/mas/nico/fr_FR/someFragment',
+                        path: '/content/dam/mas/drafts/fr_FR/someFragment',
                         some: 'corps',
                     },
                 ],
@@ -19,17 +22,30 @@ describe('translate typical cases', () => {
         const result = await translate({
             status: 200,
             body: {
-                path: '/content/dam/mas/nico/en_US/someFragment',
+                path: '/content/dam/mas/drafts/en_US/someFragment',
                 some: 'body',
             },
             locale: 'fr_FR',
         });
         expect(result.status).to.equal(200);
         expect(result.body).to.deep.equal({
-            path: '/content/dam/mas/nico/fr_FR/someFragment',
+            path: '/content/dam/mas/drafts/fr_FR/someFragment',
             some: 'corps',
         });
-        nock.cleanAll();
+    });
+    it('should return fr fragment (fr fragment, no locale)', async () => {
+        const result = await translate({
+            status: 200,
+            body: {
+                path: '/content/dam/mas/drafts/fr_FR/someFragment',
+                some: 'corps',
+            },
+        });
+        expect(result.status).to.equal(200);
+        expect(result.body).to.deep.equal({
+            path: '/content/dam/mas/drafts/fr_FR/someFragment',
+            some: 'corps',
+        });
     });
 });
 
@@ -62,13 +78,13 @@ describe('translate corner cases', () => {
         const result = await translate({
             status: 200,
             body: {
-                path: '/content/dam/mas/nico/fr_FR/someFragment',
+                path: '/content/dam/mas/drafts/fr_FR/someFragment',
                 some: 'body',
             },
             locale: 'fr_FR',
         });
         expect(result.body).to.deep.equal({
-            path: '/content/dam/mas/nico/fr_FR/someFragment',
+            path: '/content/dam/mas/drafts/fr_FR/someFragment',
             some: 'body',
         });
     });

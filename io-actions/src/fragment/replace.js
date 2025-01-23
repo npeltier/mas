@@ -5,17 +5,24 @@ const PH_REGEXP = /{{(\s*([\w\-]+)\s*)}}/gi;
 
 const getDictionaryId = async ({ surface, locale }) => {
     try {
-        const response = await fetch(
-            odinPath(surface, locale, DICTIONARY_ID_PATH),
-        );
+        const dictionaryPath = odinPath(surface, locale, DICTIONARY_ID_PATH)
+        const response = await fetch(dictionaryPath);
         if (response.status == 200) {
-            const raw = await response.json();
-            return raw.id;
+            const { items } = await response.json();
+            if (items?.length == 1) {
+                return items[0].id;
+            }
         }
     } catch (e) {
         console.error(e);
     }
     return null;
+};
+
+const extractValue = (ref) => {
+    const value = ref.value || ref?.richTextValue?.value || '';
+    // Escape control characters before parsing
+    return value.replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
 };
 
 const getDictionary = async (context) => {
@@ -34,7 +41,7 @@ const getDictionary = async (context) => {
                 if (ref?.key) {
                     //we just test truthy keys as we can have empty placeholders
                     //(treated different from absent ones)
-                    dictionary[ref.key] = ref.value || '';
+                    dictionary[ref.key] = extractValue(ref);
                 }
             });
             return dictionary;
@@ -81,7 +88,12 @@ async function replace(context) {
         const dictionary = await getDictionary(context);
         if (dictionary && Object.keys(dictionary).length > 0) {
             fieldsString = replaceValues(fieldsString, dictionary, []);
-            body.fields = JSON.parse(fieldsString);
+            try {
+                body.fields = JSON.parse(fieldsString);
+            } catch (e) {
+                console.error('Failed to parse fieldsString:', e);
+                body.fields = {};
+            }
         }
     }
     return {

@@ -96,6 +96,17 @@
                     "value": "{{yin}} and yang"
                 }
             }
+        },
+        "richText": {
+            "value": {
+                "fields": {
+                    "key": "rich-text",
+                    "richTextValue": {
+                        "mimeType": "text/html",
+                        "value": "<p>i am <strong>rich</strong></p>"
+                    }
+                }
+            }
         }
     }
 }
