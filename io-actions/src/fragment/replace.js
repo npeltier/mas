@@ -5,7 +5,7 @@ const PH_REGEXP = /{{(\s*([\w\-]+)\s*)}}/gi;
 
 const getDictionaryId = async ({ surface, locale }) => {
     try {
-        const dictionaryPath = odinPath(surface, locale, DICTIONARY_ID_PATH)
+        const dictionaryPath = odinPath(surface, locale, DICTIONARY_ID_PATH);
         const response = await fetch(dictionaryPath);
         if (response.status == 200) {
             const { items } = await response.json();
