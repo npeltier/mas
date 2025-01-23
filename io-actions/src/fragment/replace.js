@@ -3,7 +3,7 @@ const { odinReferences, odinPath } = require('./paths.js');
 const DICTIONARY_ID_PATH = 'dictionary/index';
 const PH_REGEXP = /{{(\s*([\w\-]+)\s*)}}/gi;
 
-const getDictionaryId = async ({ surface, locale }) => {
+async function getDictionaryId({ surface, locale }) {
     try {
         const dictionaryPath = odinPath(surface, locale, DICTIONARY_ID_PATH);
         const response = await fetch(dictionaryPath);
@@ -17,15 +17,15 @@ const getDictionaryId = async ({ surface, locale }) => {
         console.error(e);
     }
     return null;
-};
+}
 
-const extractValue = (ref) => {
+function extractValue(ref) {
     const value = ref.value || ref?.richTextValue?.value || '';
     // Escape control characters before parsing
     return value.replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
-};
+}
 
-const getDictionary = async (context) => {
+async function getDictionary(context) {
     try {
         const id = await getDictionaryId(context);
         if (!id) {
@@ -50,9 +50,9 @@ const getDictionary = async (context) => {
         console.error(e);
     }
     return null;
-};
+}
 
-replaceValues = (input, dictionary, calls) => {
+function replaceValues(input, dictionary, calls) {
     const placeholders = input.matchAll(PH_REGEXP);
     let replaced = '';
     let nextIndex = 0;
@@ -79,7 +79,7 @@ replaceValues = (input, dictionary, calls) => {
     }
     replaced = replaced + input.slice(nextIndex);
     return replaced;
-};
+}
 
 async function replace(context) {
     const { body } = context;

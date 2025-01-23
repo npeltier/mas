@@ -4,9 +4,9 @@ const replace = require('./replace.js').replace;
 
 async function main(params) {
     let context = { ...params, status: 200 };
-    for (const worker of [fetchFragment, translate, replace]) {
+    for (const transformer of [fetchFragment, translate, replace]) {
         if (context.status != 200) break;
-        context = await worker(context);
+        context = await transformer(context);
     }
     returnValue = {
         status: context.status,

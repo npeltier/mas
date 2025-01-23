@@ -10,14 +10,18 @@ const PATH_TOKENS =
  * @param {*} id id of the fragment,
  * @returns full fetchable path to the fragment
  */
-const odinId = (id) => `${FRAGMENT_URL_PREFIX}/${id}`;
+function odinId(id) {
+    return `${FRAGMENT_URL_PREFIX}/${id}`;
+}
 
 /**
  * builds a full fetchable path to the fragment references
  * @param {*} id id of the fragment,
  * @returns full fetchable path to the fragment references
  */
-const odinReferences = (id) => `${odinId(id)}/variations/master/references`;
+function odinReferences(id) {
+    return `${odinId(id)}/variations/master/references`;
+}
 
 /**
  * builds a full fetchable path to the fragment
@@ -26,8 +30,9 @@ const odinReferences = (id) => `${odinId(id)}/variations/master/references`;
  * @param {*} fragmentPath subpath of the fragment from the locale root
  * @returns full fetchable path to the fragment
  */
-const odinPath = (surface, locale, fragmentPath) =>
-    `${FRAGMENT_URL_PREFIX}?path=${MAS_ROOT}/${surface}/${locale}/${fragmentPath}`;
+function odinPath(surface, locale, fragmentPath) {
+    return `${FRAGMENT_URL_PREFIX}?path=${MAS_ROOT}/${surface}/${locale}/${fragmentPath}`;
+}
 
 module.exports = {
     PATH_TOKENS,
