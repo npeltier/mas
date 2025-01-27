@@ -1,6 +1,8 @@
 application:
   actions: actions
   web: web-src
+  hooks:
+    test: npm run test
   runtimeManifest:
     packages:
       MerchAtScale:
