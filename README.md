@@ -18,7 +18,7 @@ npm run lint
 ```
 
 ## Local development
-```
+``` 
 npm run build
 npm run studio
 ```
