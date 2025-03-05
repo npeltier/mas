@@ -101,6 +101,44 @@ describe('translate corner cases', () => {
         });
     });
 
+    it('should return 404 when translation fetch fails', async () => {
+        nock('https://odin.adobe.com')
+            .get('/adobe/sites/fragments')
+            .query({ path: '/content/dam/mas/drafts/fr_FR/someFragment' })
+            .reply(404, {
+                message: 'Not found',
+            });
+
+        const result = await translate({
+            ...FAKE_CONTEXT,
+            body: { path: '/content/dam/mas/drafts/en_US/someFragment' },
+            locale: 'fr_FR',
+        });
+        expect(result).to.deep.equal({
+            status: 404,
+            message: 'no translation found',
+        });
+    });
+
+    it('should return 404 when translation has no items', async () => {
+        nock('https://odin.adobe.com')
+            .get('/adobe/sites/fragments')
+            .query({ path: '/content/dam/mas/drafts/fr_FR/someFragment' })
+            .reply(200, {
+                items: [],
+            });
+
+        const result = await translate({
+            ...FAKE_CONTEXT,
+            body: { path: '/content/dam/mas/drafts/en_US/someFragment' },
+            locale: 'fr_FR',
+        });
+        expect(result).to.deep.equal({
+            status: 404,
+            message: 'no translation found',
+        });
+    });
+
     it('same locale should return same body', async () => {
         const result = await translate({
             ...FAKE_CONTEXT,

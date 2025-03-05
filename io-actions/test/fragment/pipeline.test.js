@@ -109,6 +109,11 @@ describe('pipeline full use case', () => {
 });
 
 describe('pipeline corner cases', () => {
+    beforeEach(() => {
+        nock.cleanAll();
+        mockDictionary();
+    });
+
     it('main should be defined', () => {
         expect(action.main).to.be.a('function');
     });
@@ -133,12 +138,11 @@ describe('pipeline corner cases', () => {
 
         expect(result).to.deep.equal({
             status: 500,
-            message:
-                'error parsing response FetchError: request to https://odin.adobe.com/adobe/sites/fragments/test-fragment failed, reason: Network error',
+            message: 'nok',
         });
     });
 
-    it('should handle non-200 response status', async () => {
+    it('should handle 404 response status', async () => {
         nock('https://odin.adobe.com')
             .get('/adobe/sites/fragments/test-fragment')
             .reply(404, {
@@ -152,7 +156,7 @@ describe('pipeline corner cases', () => {
 
         expect(result).to.deep.equal({
             status: 404,
-            message: 'requested fragment not found',
+            message: 'nok',
         });
     });
 

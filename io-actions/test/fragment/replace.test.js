@@ -106,6 +106,10 @@ describe('replace', () => {
         );
     });
     describe('corner cases', () => {
+        beforeEach(() => {
+            nock.cleanAll();
+        });
+
         const FAKE_CONTEXT = {
             status: 200,
             surface: 'drafts',
@@ -116,7 +120,7 @@ describe('replace', () => {
             body: {
                 fields: {
                     cta: 'Buy now',
-                    description: 'description',
+                    description: '{{description}}',
                     variant: 'ccd-slice',
                 },
                 id: 'test',

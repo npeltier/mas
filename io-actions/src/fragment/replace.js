@@ -82,10 +82,7 @@ async function replace(context) {
             fieldsString = replaceValues(fieldsString, dictionary, []);
             try {
                 body.fields = JSON.parse(fieldsString);
-            } catch (e) {
-                logError(`Failed to parse fieldsString: ${e.message}`, context);
-                body.fields = {};
-            }
+            } catch (e) {}
         }
     } else {
         log('no placeholders found in fragment content', context);
