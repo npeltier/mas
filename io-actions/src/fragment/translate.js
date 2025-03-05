@@ -6,8 +6,6 @@ const NO_TRANSLATION_FOUND = {
     message: 'no translation found',
 };
 
-
-
 /**
  * we expect a body to already have been fetched, and a locale to be requested.
  * This transformer name is a bit abusive: it just fetches a translation if the locale is different from the source locale.

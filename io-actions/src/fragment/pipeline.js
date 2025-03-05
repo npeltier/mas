@@ -7,12 +7,14 @@ const { log } = require('./common.js');
 async function main(params) {
     const requestId =
         params.__ow_headers?.['x-request-id'] || 'mas-' + Date.now();
+    const api_key = params.api_key || 'n/a';
     const DEFAULT_HEADERS = {
         Accept: 'application/json',
         'X-Request-ID': requestId,
     };
     let context = {
         ...params,
+        api_key,
         requestId,
         transformer: 'pipeline',
         DEFAULT_HEADERS,

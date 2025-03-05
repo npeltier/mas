@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 
 function logPrefix(context, type = 'info') {
-    return `[${type}][${context.requestId}][${context.transformer}]`;
+    return `[${type}][${context.api_key}][${context.requestId}][${context.transformer}]`;
 }
 
 function log(message, context, type) {
