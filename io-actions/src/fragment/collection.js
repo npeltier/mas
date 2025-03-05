@@ -75,3 +75,4 @@ async function collection(context) {
 }
 
 exports.collection = collection;
+exports.parseReferences = parseReferences;

@@ -63,9 +63,32 @@ describe('translate corner cases', () => {
     });
 
     it('bad path should return 400', async () => {
+        expect(
+            await translate({
+                status: 200,
+                body: { path: 'something/rather/wrong' },
+                locale: 'fr_FR',
+            }),
+        ).to.deep.equal({
+            status: 400,
+            message: 'source path is either not here or invalid',
+        });
+        expect(
+            await translate({
+                status: 200,
+                body: { path: 'content/dam/mas/a/b/' },
+                locale: 'fr_FR',
+            }),
+        ).to.deep.equal({
+            status: 400,
+            message: 'source path is either not here or invalid',
+        });
+    });
+
+    it('missing path components should return 400', async () => {
         const result = await translate({
             status: 200,
-            body: { path: 'something/rather/wrong' },
+            body: { path: '/content/dam/mas/drafts/someFragment' }, // Missing locale
             locale: 'fr_FR',
         });
         expect(result).to.deep.equal({

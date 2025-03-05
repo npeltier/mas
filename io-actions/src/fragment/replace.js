@@ -9,7 +9,7 @@ async function getDictionaryId({ surface, locale }) {
         const response = await fetch(dictionaryPath);
         if (response.status == 200) {
             const { items } = await response.json();
-            if (items?.length == 1) {
+            if (items?.length > 0) {
                 return items[0].id;
             }
         }
