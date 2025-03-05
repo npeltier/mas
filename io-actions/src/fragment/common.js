@@ -4,8 +4,12 @@ function logPrefix(context, type = 'info') {
     return `[${type}][${context.api_key}][${context.requestId}][${context.transformer}]`;
 }
 
-function log(message, context, type) {
-    console.log(`${logPrefix(context, type)} ${message}`);
+function log(message, context) {
+    console.log(`${logPrefix(context)} ${message}`);
+}
+
+function logError(message, context) {
+    console.error(`${logPrefix(context, 'error')} ${message}`);
 }
 
 async function getErrorMessage(response) {
@@ -31,10 +35,7 @@ async function internalFetch(path, context) {
         );
         return response;
     } catch (e) {
-        console.error(
-            `${logPrefix(context, 'error')}[fetch] ${path} fetch error`,
-            e,
-        );
+        logError(`[fetch] ${path} fetch error: ${e.message}`, context);
     }
     return {
         status: 500,
@@ -45,4 +46,5 @@ async function internalFetch(path, context) {
 module.exports = {
     fetch: internalFetch,
     log,
+    logError,
 };

@@ -1,5 +1,5 @@
 const { odinReferences, odinPath } = require('./paths.js');
-const { fetch, log } = require('./common.js');
+const { fetch, log, logError } = require('./common.js');
 const DICTIONARY_ID_PATH = 'dictionary/index';
 const PH_REGEXP = /{{(\s*([\w\-]+)\s*)}}/gi;
 
@@ -83,7 +83,7 @@ async function replace(context) {
             try {
                 body.fields = JSON.parse(fieldsString);
             } catch (e) {
-                console.error('Failed to parse fieldsString:', e);
+                logError(`Failed to parse fieldsString: ${e.message}`, context);
                 body.fields = {};
             }
         }
