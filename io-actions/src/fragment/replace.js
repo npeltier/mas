@@ -82,7 +82,10 @@ async function replace(context) {
             fieldsString = replaceValues(fieldsString, dictionary, []);
             try {
                 body.fields = JSON.parse(fieldsString);
-            } catch (e) {}
+            } catch (e) {
+                /* istanbul ignore next */
+                logError(`[replace] ${e.message}`, context);
+            }
         }
     } else {
         log('no placeholders found in fragment content', context);
