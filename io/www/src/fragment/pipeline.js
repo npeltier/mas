@@ -34,8 +34,8 @@ async function main(params) {
         `starting request pipeline for ${context.id} in ${context.locale}`,
         context,
     );
+    /* istanbul ignore next */
     if (!context.state) {
-        /* istanbul ignore next */
         context.state = await stateLib.init();
     }
     const requestKey = `req-${context.id}-${context.locale}`;
@@ -89,7 +89,7 @@ async function main(params) {
         const ifModifiedSince = params.__ow_headers?.['if-modified-since'];
         if (ifModifiedSince) {
             const modifiedSince = new Date(ifModifiedSince);
-            if (lastModified <= modifiedSince) {
+            if (lastModified.getTime() <= modifiedSince.getTime()) {
                 returnValue.statusCode = 304;
                 delete returnValue.body;
             }
@@ -97,7 +97,7 @@ async function main(params) {
         returnValue.headers = {
             ...returnValue.headers,
             ETag: `${hash}`,
-            'Last-Modified': lastModified.toISOString(),
+            'Last-Modified': lastModified.toUTCString(),
         };
     } else {
         returnValue.message = context.message;
