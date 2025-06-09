@@ -187,6 +187,17 @@
                     "key": ""
                 }
             }
+        },
+        "coll-search-results-mobile-text": {
+            "value": {
+                "fields": {
+                    "key": "coll-search-results-mobile-text",
+                    "richTextValue": {
+                        "value": "{{coll-result-count}} results in <strong>{{coll-search-term}}</strong>",
+                        "mimeType": "text/html"
+                    }
+                }
+            }
         }
     },
     "referencesTree": []
