@@ -9,6 +9,7 @@ const {
     getElapsedTime,
     getFromState,
     getJsonFromState,
+    getElapsedTimeMs,
 } = require('./common.js');
 const corrector = require('./corrector.js').corrector;
 const crypto = require('crypto');
@@ -18,6 +19,7 @@ const stateLib = require('@adobe/aio-lib-state');
 const translate = require('./translate.js').translate;
 const wcs = require('./wcs.js').wcs;
 const zlib = require('zlib');
+const { time } = require('console');
 
 function calculateHash(body) {
     return crypto.createHash('sha256').update(JSON.stringify(body)).digest('hex');
@@ -55,7 +57,9 @@ async function main(params) {
     try {
         const { json } = await getJsonFromState('network-config', context);
         context.networkConfig = json || {};
-        const timeout = context.networkConfig.mainTimeout || 5000;
+        const initTime = getElapsedTimeMs(context);
+        let timeout = context.networkConfig.mainTimeout || 5000;
+        timeout = Math.max(timeout - initTime, 0);
         returnValue = await Promise.race([
             mainProcess(context),
             createTimeoutPromise(timeout, () => {
