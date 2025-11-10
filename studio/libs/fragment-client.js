@@ -14,9 +14,30 @@ import { transformer as promotions } from './tmp/transformers/promotions.js';
 
 const PIPELINE = [fetchFragment, promotions, customize, settings, replace, corrector];
 
+class LocaleStorageState {
+    constructor() {        
+    }
+
+    async get(key) {
+        return new Promise((resolve) => {
+            resolve({
+                value: window.localStorage.getItem(key),
+            });
+        });
+    }
+
+    async put(key, value) {
+        return new Promise((resolve) => {
+            window.localStorage.setItem(key, value);
+            resolve();
+        });
+    }
+}
+
 async function previewFragment(id, options) {
     const {
         locale = 'en_US',
+        country,
         preview = {
             url: 'https://odinpreview.corp.adobe.com/adobe/sites/cf/fragments',
         },
@@ -25,6 +46,7 @@ async function previewFragment(id, options) {
         id,
         status: 200,
         preview,
+        state: new LocaleStorageState(),
         requestId: 'preview',
         networkConfig: {
             mainTimeout: 15000,
@@ -75,7 +97,8 @@ async function previewStudioFragment(body, options) {
     } = options;
     let context = {
         body,
-        status: 200,
+        state: new LocaleStorageState(),
+        status: 200,        
         preview,
         requestId: 'preview',
         networkConfig: {
