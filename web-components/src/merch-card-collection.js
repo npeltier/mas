@@ -412,6 +412,12 @@ export class MerchCardCollection extends LitElement {
                             ) !== -1
                         )
                             continue;
+                        if (!fragment.references[reference.identifier]?.value) {
+                            console.error(
+                                `Reference not found for card: ${reference.identifier}`,
+                            );
+                            continue;
+                        }
                         payload.cards.push(
                             fragment.references[reference.identifier].value,
                         );
