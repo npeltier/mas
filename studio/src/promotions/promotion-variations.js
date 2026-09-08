@@ -395,9 +395,12 @@ export async function probePromoVariationReferences(aem, defaultPath, promotionP
 /**
  * Finds promo variations of a fragment's grouped (pzn) variations across every promotion project.
  * Grouped paths never appear in a project's 'fragments' field (only the parent card does), so they
- * can't be filtered by attachment. Instead of one folder search per project, this runs a single
- * recursive search over the promotions root and matches each grouped copy by path suffix — the
- * owning project is recoverable from the copy's own path/tags, so no per-project iteration is needed.
+ * can't be filtered by attachment. A recursive scan of the whole promotions root is both slow
+ * (cursor pagination is serial) and wasteful (it returns every promo copy just to keep a handful).
+ * Instead, each grouped copy keeps its source leaf as its node name, so an EDGES full-text search on
+ * that leaf returns only the copies of that variation — a single unpaginated page (verified: all 15
+ * live grouped copies matched, ≤3 results each, no cursor). One such search per grouped variation
+ * runs concurrently; the suffix matcher stays the authoritative filter so any over-match is dropped.
  * @param {import('../aem/aem.js').AEM} aem
  * @param {string} defaultPath - the parent card path (shares the surface/locale promotions root)
  * @param {string[]} groupedVariationPaths
@@ -408,43 +411,52 @@ async function probeGroupedVariationPromoReferences(aem, defaultPath, groupedVar
     const promotionsRoot = buildPromotionsRootPath(defaultPath);
     if (!promotionsRoot) return [];
 
-    const matchers = groupedVariationPaths
+    const targets = groupedVariationPaths
         .map((path) => PATH_TOKENS.exec(path)?.groups?.fragmentPath)
         .filter(Boolean)
-        .map((relPath) => buildPromoVariationSuffixMatcher(promotionsRoot, relPath));
-    if (!matchers.length) return [];
+        .map((relPath) => ({
+            matcher: buildPromoVariationSuffixMatcher(promotionsRoot, relPath),
+            leaf: relPath.split('/').pop(),
+        }))
+        .filter((target) => target.leaf);
+    if (!targets.length) return [];
 
-    const results = [];
-    try {
-        for await (const batch of aem.sites.cf.fragments.search({ path: promotionsRoot }, VARIATION_SEARCH_PAGE_SIZE)) {
-            for (const variation of batch) {
-                if (!variation?.id || !variation?.path) continue;
-                let match = null;
-                for (const matcher of matchers) {
-                    match = matcher.exec(variation.path);
-                    if (match) break;
+    const resultsPerTarget = await processConcurrently(
+        targets,
+        async ({ matcher, leaf }) => {
+            const found = [];
+            try {
+                for await (const batch of aem.sites.cf.fragments.search(
+                    { path: promotionsRoot, query: leaf },
+                    VARIATION_SEARCH_PAGE_SIZE,
+                )) {
+                    for (const variation of batch) {
+                        if (!variation?.id || !variation?.path) continue;
+                        const match = matcher.exec(variation.path);
+                        if (!match) continue;
+                        const index = match[1] ? Number(match[1]) : 1;
+                        if (index < 1 || index > MAX_PROMO_VARIATIONS_PER_FRAGMENT) continue;
+                        found.push({
+                            path: variation.path,
+                            index,
+                            id: variation.id,
+                            pznTags: readPznTags(variation),
+                            status: variation.status,
+                            title: variation.title,
+                            model: variation.model,
+                            fields: variation.fields,
+                            tags: variation.tags,
+                        });
+                    }
                 }
-                if (!match) continue;
-                const index = match[1] ? Number(match[1]) : 1;
-                if (index < 1 || index > MAX_PROMO_VARIATIONS_PER_FRAGMENT) continue;
-                results.push({
-                    path: variation.path,
-                    index,
-                    id: variation.id,
-                    pznTags: readPznTags(variation),
-                    status: variation.status,
-                    title: variation.title,
-                    model: variation.model,
-                    fields: variation.fields,
-                    tags: variation.tags,
-                });
+            } catch (error) {
+                console.error('Failed to search promotions folder for grouped promo variation probe:', error);
             }
-        }
-    } catch (error) {
-        console.error('Failed to search promotions folder for grouped promo variation probe:', error);
-        return [];
-    }
-    return results;
+            return found;
+        },
+        VARIATIONS_CONCURRENCY_LIMIT,
+    );
+    return resultsPerTarget.flat();
 }
 
 /**
