@@ -977,6 +977,22 @@ export default class MasFragmentEditor extends LitElement {
         ]);
     }
 
+    // Folds background promo-variation refs into the active store once the probe resolves.
+    // Only `references` (+ the list-row re-probe guard flag) are touched, so a card render and
+    // any field edits made while the probe was in flight are preserved (refs aren't user-editable).
+    #applyPromoReferencesWhenReady(fragmentStore, fragmentId, promoMerge) {
+        void promoMerge
+            .then((enriched) => {
+                if (Store.fragmentEditor.fragmentId.get() !== fragmentId) return;
+                const fragment = fragmentStore.get();
+                if (!fragment) return;
+                fragment.references = enriched.references;
+                fragment.promoVariationProbeNotNeeded = true;
+                fragmentStore.notify();
+            })
+            .catch((error) => console.error('Promo variation probe failed:', error));
+    }
+
     // Marks init flow as complete and clears loading state.
     #markInitReady() {
         this.initState = MasFragmentEditor.INIT_STATE.READY;
@@ -1107,8 +1123,11 @@ export default class MasFragmentEditor extends LitElement {
             if (this.repository.search.value.path) {
                 void this.repository.loadPreviewPlaceholders(Store.localeOrRegion());
             }
-            let fragmentData = await this.repository.aem.sites.cf.fragments.getById(fragmentId);
-            fragmentData = await promotionsRepository.mergePromoReferencesIntoFragmentData(
+            const fragmentData = await this.repository.aem.sites.cf.fragments.getById(fragmentId);
+            // Probe promo variations in the background: the merge only adds `references`, which the
+            // card fields and preview don't need. Awaiting it here used to block both for ~2s while
+            // the promotions tree was searched. Its refs are folded in via #applyPromoReferencesWhenReady.
+            const promoMerge = promotionsRepository.mergePromoReferencesIntoFragmentData(
                 this.repository.aem,
                 fragmentData,
                 () => this.repository.loadPromotions(),
@@ -1169,6 +1188,7 @@ export default class MasFragmentEditor extends LitElement {
 
             this.#activateEditorStore(fragmentStore);
             this.dispatchFragmentLoaded();
+            this.#applyPromoReferencesWhenReady(fragmentStore, fragmentId, promoMerge);
 
             // Handle locale-specific placeholder reload for variations
             if (isVariationForStore && !isGroupedVariation) {
