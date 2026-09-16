@@ -23,7 +23,7 @@ merch-card error text.
 
 **Critical: every count in the parser output is a ~1% sample, not a headcount.** MAS
 logs errors to LANA with `sampleRate: 1` (`web-components/src/lana.js`), and Milo's
-lana treats `sampleRate` as a *percent* — `sampleRate <= Math.random() * 100`
+lana treats `sampleRate` as a _percent_ — `sampleRate <= Math.random() * 100`
 (`libs/utils/lana.js`), so roughly 1 in 100 client error events is actually forwarded
 to Splunk. Info events (`errorType: 'i'`) use `implicitSampleRate: 1` — also ~1%.
 
@@ -37,7 +37,7 @@ Consequences for every number you report:
   report it as "seen, a handful of times" and never scale it to a headline number.
 - The **verdict and classification never depend on scaling** — proportions between
   messages are unaffected by uniform sampling. Scaling only changes how you describe
-  *magnitude/impact*. Do not let a scaled-up number inflate the severity of a
+  _magnitude/impact_. Do not let a scaled-up number inflate the severity of a
   low-count signal.
 - Whenever you print a raw parser count, either scale it or flag it as a raw 1% sample.
   Never present a raw count as the number of affected users.
@@ -45,23 +45,27 @@ Consequences for every number you report:
 ## Workflow
 
 1. **Parse.** Run the bundled parser (do not re-implement it):
-   ```sh
-   python3 "$(dirname skill)/parse_lana.py" <csv>
-   ```
-   It emits JSON: event count, time range, referer(s), locales, an id-normalized
-   message histogram, `card_ids`, `culprit_fragment_ids` (ids named inside the error
-   text — the fragments to fix), and `fetched_fragments` (per-fragment fetch health).
+
+    ```sh
+    python3 "$(dirname skill)/parse_lana.py" <csv>
+    ```
+
+    It emits JSON: event count, time range, referer(s), locales, an id-normalized
+    message histogram, `card_ids`, `culprit_fragment_ids` (ids named inside the error
+    text — the fragments to fix), and `fetched_fragments` (per-fragment fetch health).
 
 2. **Classify** each dominant message with the decision table below.
 
 3. **Verify** the top culprit fragment(s) against production before asserting a cause —
    fetch the live payload and inspect the field the code actually reads:
-   ```sh
-   curl -s "https://www.adobe.com/mas/io/fragment?id=<id>&api_key=wcms-commerce-ims-ro-user-milo&locale=<locale>" | python3 -m json.tool
-   ```
-   Compare the `etag` to the one in the report; check `fields.variant`, fetch status,
-   `path`, `model`, and **`tags`**. A 200 + cdn HIT + stable etag means delivery is
-   healthy and the fault is in the content or the client.
+
+    ```sh
+    curl -s "https://www.adobe.com/mas/io/fragment?id=<id>&api_key=wcms-commerce-ims-ro-user-milo&locale=<locale>" | python3 -m json.tool
+    ```
+
+    Compare the `etag` to the one in the report; check `fields.variant`, fetch status,
+    `path`, `model`, and **`tags`**. A 200 + cdn HIT + stable etag means delivery is
+    healthy and the fault is in the content or the client.
 
 4. **Check whether the culprit is a variation** (see "Variations must never be served
    directly" below). This changes both the root cause and who owns the fix.
@@ -170,20 +174,20 @@ owner concrete links, not just prose:
 
 Ground truth for the merch-card messages is `web-components/src/hydrate.js`.
 
-| Message / signal | Meaning | Verdict |
-|---|---|---|
-| `no template found in payload <id>` + culprit is a **variation** (promo/grouped — see signals above) | a variation is being rendered standalone; it has no variant because the base does | **AUTHORING** — a variation is being served directly (MEP/link points at the variation, not the base card) |
-| `no template found in payload <id>` + culprit is a **base card** | `fields.variant` is empty on the base fragment (`if (!variant) throw`) | **AUTHORING** — base card published with no card layout selected |
+| Message / signal                                                                                                                           | Meaning                                                                                                          | Verdict                                                                                                                                                                                   |
+| ------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `no template found in payload <id>` + culprit is a **variation** (promo/grouped — see signals above)                                       | a variation is being rendered standalone; it has no variant because the base does                                | **AUTHORING** — a variation is being served directly (MEP/link points at the variation, not the base card)                                                                                |
+| `no template found in payload <id>` + culprit is a **base card**                                                                           | `fields.variant` is empty on the base fragment (`if (!variant) throw`)                                           | **AUTHORING** — base card published with no card layout selected                                                                                                                          |
 | `merch-card[<id>]: … no template found` + the id is authored **only via `mas-field`** (`field=` links) / is a headless/field-only fragment | a field-only fragment was rendered as a full card by an old autoblock; it has no variant because it's not a card | **CODE / Milo rollout** — `field=` reroute (milo PR #6463 / MWPW-202286) not yet on the served build; self-heals. NOT authoring — see "Headless / field-only fragment rendered as a card" |
-| `variant mapping not found for <id>` | `fields.variant` is set but has no registered layout | **MIXED** — typo variant = authoring; brand-new variant = code (missing mapping) |
-| `Fragment is undefined` / `is missing 'fields'` | fetch returned empty/blank payload | **CODE / pipeline** (or deleted id) — check fetch status |
-| `AEM fragment cannot be loaded` | fetch failed | inspect `fetched_fragments.status` (below) |
-| `MERCH-CARD/MAS-FIELD did not initialize … timeout` | element never upgraded / hydration never ran | **CODE / client** (script load, timing) — usually secondary to a primary error |
-| fetch `status` 404 | fragment unpublished / deleted / wrong id | **AUTHORING** — broken reference; publish or fix the ref |
-| fetch `status` 401/403 | auth / api_key | **CODE / config** |
-| fetch `status` 5xx / 504 / timeout | io pipeline failure | **CODE / pipeline** — see [[project_fragment_504_floor_state_metadata]], [[project_mwpw_203268_iowww_perf]] |
-| high `retryCount` / `stale=true` / many `REVALIDATE` | cache thrash / origin unhealthy | **CODE / pipeline** |
-| `status` 200 + cdn HIT + a client error message | delivery healthy | **AUTHORING or client CODE** per the message |
+| `variant mapping not found for <id>`                                                                                                       | `fields.variant` is set but has no registered layout                                                             | **MIXED** — typo variant = authoring; brand-new variant = code (missing mapping)                                                                                                          |
+| `Fragment is undefined` / `is missing 'fields'`                                                                                            | fetch returned empty/blank payload                                                                               | **CODE / pipeline** (or deleted id) — check fetch status                                                                                                                                  |
+| `AEM fragment cannot be loaded`                                                                                                            | fetch failed                                                                                                     | inspect `fetched_fragments.status` (below)                                                                                                                                                |
+| `MERCH-CARD/MAS-FIELD did not initialize … timeout`                                                                                        | element never upgraded / hydration never ran                                                                     | **CODE / client** (script load, timing) — usually secondary to a primary error                                                                                                            |
+| fetch `status` 404                                                                                                                         | fragment unpublished / deleted / wrong id                                                                        | **AUTHORING** — broken reference; publish or fix the ref                                                                                                                                  |
+| fetch `status` 401/403                                                                                                                     | auth / api_key                                                                                                   | **CODE / config**                                                                                                                                                                         |
+| fetch `status` 5xx / 504 / timeout                                                                                                         | io pipeline failure                                                                                              | **CODE / pipeline** — see [[project_fragment_504_floor_state_metadata]], [[project_mwpw_203268_iowww_perf]]                                                                               |
+| high `retryCount` / `stale=true` / many `REVALIDATE`                                                                                       | cache thrash / origin unhealthy                                                                                  | **CODE / pipeline**                                                                                                                                                                       |
+| `status` 200 + cdn HIT + a client error message                                                                                            | delivery healthy                                                                                                 | **AUTHORING or client CODE** per the message                                                                                                                                              |
 
 ## Output format
 

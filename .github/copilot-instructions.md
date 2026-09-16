@@ -53,13 +53,13 @@ Monorepo with three workspaces:
 
 ### Studio internal structure (`/studio`)
 
-| Folder | Purpose |
-|---|---|
-| `common/` | Main views, top bar, constants, fields, repository interaction, store, utils |
-| `fragments/` | Views and models for fragments view |
-| `placeholders/` | Views and models for placeholders view |
-| `promotions/` | Views and models for promotions view |
-| `translation/` | Views and models for translation view |
+| Folder          | Purpose                                                                      |
+| --------------- | ---------------------------------------------------------------------------- |
+| `common/`       | Main views, top bar, constants, fields, repository interaction, store, utils |
+| `fragments/`    | Views and models for fragments view                                          |
+| `placeholders/` | Views and models for placeholders view                                       |
+| `promotions/`   | Views and models for promotions view                                         |
+| `translation/`  | Views and models for translation view                                        |
 
 ## Code style
 
