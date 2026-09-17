@@ -1,0 +1,24 @@
+# SZZ blame-causality: path patterns to exclude from bug attribution.
+# One pattern per line. '#' comments and blank lines ignored.
+# Matched (case-insensitive) as: prefix, "/substring/", or *.ext suffix.
+dist/
+/dist/
+node_modules/
+coverage/
+/coverage/
+*.min.js
+*.min.css
+*.map
+package-lock.json
+yarn.lock
+# tests
+nala/
+/nala/
+test/
+/test/
+tests/
+/tests/
+/__tests__/
+*.test.js
+*.spec.js
+*.test.html
