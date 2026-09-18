@@ -47,7 +47,7 @@ Consequences for every number you report:
 1. **Parse.** Run the bundled parser (do not re-implement it):
 
     ```sh
-    python3 "$(dirname skill)/parse_lana.py" <csv>
+    python3 .github/skills/splunk-referer-analysis/parse_lana.py <csv>
     ```
 
     It emits JSON: event count, time range, referer(s), locales, an id-normalized
@@ -185,7 +185,7 @@ Ground truth for the merch-card messages is `web-components/src/hydrate.js`.
 | `MERCH-CARD/MAS-FIELD did not initialize … timeout`                                                                                        | element never upgraded / hydration never ran                                                                     | **CODE / client** (script load, timing) — usually secondary to a primary error                                                                                                            |
 | fetch `status` 404                                                                                                                         | fragment unpublished / deleted / wrong id                                                                        | **AUTHORING** — broken reference; publish or fix the ref                                                                                                                                  |
 | fetch `status` 401/403                                                                                                                     | auth / api_key                                                                                                   | **CODE / config**                                                                                                                                                                         |
-| fetch `status` 5xx / 504 / timeout                                                                                                         | io pipeline failure                                                                                              | **CODE / pipeline** — see [[project_fragment_504_floor_state_metadata]], [[project_mwpw_203268_iowww_perf]]                                                                               |
+| fetch `status` 5xx / 504 / timeout                                                                                                         | io pipeline failure                                                                                              | **CODE / pipeline** — investigate the fragment delivery pipeline                                                                                                                          |
 | high `retryCount` / `stale=true` / many `REVALIDATE`                                                                                       | cache thrash / origin unhealthy                                                                                  | **CODE / pipeline**                                                                                                                                                                       |
 | `status` 200 + cdn HIT + a client error message                                                                                            | delivery healthy                                                                                                 | **AUTHORING or client CODE** per the message                                                                                                                                              |
 

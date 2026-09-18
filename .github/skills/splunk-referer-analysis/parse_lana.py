@@ -118,4 +118,6 @@ def main(path):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        sys.exit('Usage: python3 parse_lana.py <export.csv>')
     main(sys.argv[1])

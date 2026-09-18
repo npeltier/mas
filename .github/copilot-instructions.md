@@ -11,7 +11,6 @@ npm run lint            # ESLint with auto-fix
 npm run format          # Prettier formatting
 npm test                # Unit tests across all workspaces
 npm run studio          # Local dev server with AEM proxy
-npm run gallery         # Gallery mode (stop studio first)
 ```
 
 ### Per-workspace tests
@@ -22,12 +21,12 @@ cd web-components && npm test         # Unit tests (Web Test Runner)
 cd web-components && npm run test:ci  # CI mode
 
 # studio
-cd studio && npm test
-cd studio && npm run test:ci
+cd studio && npm run test             # Watch mode
+cd studio && npm run test:ci          # One-shot CI mode
 
 # io/studio (Node.js >=22 required)
 cd io/studio && npm test
-cd io/studio && npm run coverage
+cd io/studio && npm run test:coverage
 ```
 
 ### E2E tests (Nala / Playwright)
@@ -43,13 +42,15 @@ npm run nala MWPW-160756 mode=ui    # UI mode
 
 ## Repository structure
 
-Monorepo with three workspaces:
+The npm workspaces are:
 
 - `web-components/` — Core Lit-based merchandising component library (`@adobecom/mas`). Built with esbuild into `dist/mas.js`. Components include merch-card, catalog, checkout-link, price, and commerce service integrations.
 - `studio/` — M@S Studio authoring tool (`@adobecom/mas-studio`). Lit web component for creating/editing merch fragments in Adobe Experience Manager. Has its own AEM proxy server for local dev.
 - `io/studio/` — Adobe I/O Runtime serverless backend. Node.js >=22 required. Integrates with OST (Offer Service Tier) and WCS (Web Commerce Services). Tested with Mocha.
-- `nala/` — Playwright E2E tests. Separate projects for `mas-studio-chromium` and `mas-docs-chromium`. Requires IMS authentication setup.
-- `da/` — Document API content (blocks, fonts, scripts, styles).
+- `ost/` — Offer Service Tier integration.
+- `scripts/content/` — Content-related automation scripts.
+
+Other top-level areas include `io/www/` (a Node.js >=22 service), `nala/` (Playwright E2E tests), and `da/` (Document API content).
 
 ### Studio internal structure (`/studio`)
 
@@ -84,7 +85,7 @@ Monorepo with three workspaces:
 
 ## Testing
 
-Unit tests live in `.html` files and render visually verifiable test cases. Each test file should display the component or behavior under test in a visible, inspectable way. Test meaningful behavior and visual states — not implementation details.
+Web component unit tests primarily live in `*.test.js` files and run with Web Test Runner; `studio` tests use `*.test.html` pages. The I/O workspaces use Mocha. Test meaningful behavior and visual states — not implementation details.
 
 Coverage thresholds enforced: 85% branches/statements/lines, 65% functions (web-components); similar thresholds in studio.
 
@@ -100,8 +101,4 @@ Feature branches must follow the format `MWPW-XXXXXX` (Jira ticket number). IMS 
 ## Node version
 
 - Node 20 for most development (`.nvmrc`).
-- Node >=22.16 required for `io/www`. If committing changes in `/io/www`, ensure Node 22.16+ is active — the Husky pre-commit hook runs tests and `build:client`.
-
-## Migration note
-
-The local Claude Code config includes project-level instructions in `CLAUDE.md` and environment/tool permissions in `.claude/settings.local.json`. Secret values or access tokens from the Claude config were not copied into this repository. Keep those in your local shell, environment, or secure secret management for this project.
+- Node >=22 for `io/studio` and `io/www`.
